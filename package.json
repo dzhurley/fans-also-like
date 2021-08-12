@@ -16,9 +16,9 @@
     "prettier-plugin-svelte": "2.3.1"
   },
   "prettier": {
-    "arrowParens": "always",
+    "arrowParens": "avoid",
     "singleQuote": true,
     "tabWidth": 2,
-    "trailingComma": "none"
+    "trailingComma": "all"
   }
 }
