@@ -12,6 +12,7 @@
     "svelte": "3.38.3"
   },
   "dependencies": {
+    "@tarekraafat/autocomplete.js": "10.2.6",
     "prettier": "2.3.2",
     "prettier-plugin-svelte": "2.3.1"
   },

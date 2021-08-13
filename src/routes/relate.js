@@ -1,6 +1,7 @@
 export async function get({ query }) {
+  const artist = query.get('artist');
   const resp = await fetch(
-    `https://api.spotify.com/v1/search?q=${query.get('q')}&type=artist`,
+    `https://api.spotify.com/v1/artists/${artist}/related-artists`,
     {
       headers: {
         Authorization: `Bearer ${query.get('token')}`,
@@ -9,7 +10,7 @@ export async function get({ query }) {
   ).then(r => r.json());
 
   return {
-    body: resp.artists.items.map(({ id, name }) => ({
+    body: resp.artists.map(({ id, name }) => ({
       id,
       name,
     })),

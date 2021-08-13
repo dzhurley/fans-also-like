@@ -1,21 +1,38 @@
 <script>
   import { onMount } from 'svelte';
 
+  import Search from '$lib/search.svelte';
+
   let token = '---';
 
-  let artists;
+  let artist;
+  let related = [];
 
   onMount(async () => {
     token = await fetch('/auth')
       .then(r => r.json())
       .then(r => r.access_token);
-
-    artists = await fetch(`/search?q=Holly&token=${token}`).then(r => r.json());
   });
+
+  $: {
+    if (artist) {
+      fetch(`/relate?artist=${artist.id}&token=${token}`)
+        .then(r => r.json())
+        .then(r => (related = r));
+    }
+  }
 </script>
 
+<Search {token} bind:selection={artist} />
+
+<h1>Result</h1>
 <pre>
-  {JSON.stringify(artists, null, 2)}
+  {JSON.stringify(artist, null, 2)}
+</pre>
+
+<h2>Related</h2>
+<pre>
+  {JSON.stringify(related, null, 2)}
 </pre>
 
 <style>
