@@ -1,5 +1,7 @@
 export async function get({ query }) {
   const artist = query.get('artist');
+  const group = parseInt(query.get('group'));
+
   const resp = await fetch(
     `https://api.spotify.com/v1/artists/${artist}/related-artists`,
     {
@@ -10,9 +12,8 @@ export async function get({ query }) {
   ).then(r => r.json());
 
   return {
-    body: resp.artists.map(({ id, name }) => ({
-      id,
-      name,
-    })),
+    body: resp.artists.reduce((artists, artist) => {
+      return { ...artists, [artist.name]: { ...artist, group, targets: [] } };
+    }, {}),
   };
 }

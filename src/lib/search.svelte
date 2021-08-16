@@ -5,8 +5,6 @@
 
   export let token;
 
-  export let selection = null;
-
   onMount(() => {
     new autoComplete({
       data: {
@@ -29,8 +27,6 @@
       wrapper: false,
     });
   });
-
-  const select = event => (selection = event.detail.selection.value);
 </script>
 
-<input id="autoComplete" on:selection={select} />
+<input id="autoComplete" on:selection />

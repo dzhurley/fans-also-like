@@ -9,9 +9,6 @@ export async function get({ query }) {
   ).then(r => r.json());
 
   return {
-    body: resp.artists.items.map(({ id, name }) => ({
-      id,
-      name,
-    })),
+    body: resp.artists.items,
   };
 }

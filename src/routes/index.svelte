@@ -2,11 +2,13 @@
   import { onMount } from 'svelte';
 
   import Search from '$lib/search.svelte';
+  import Viz from '$lib/viz.svelte';
 
-  let token = '---';
+  let token = '';
 
-  let artist;
-  let related = [];
+  let artists = {};
+  let searchedArtist;
+  let group = 1;
 
   onMount(async () => {
     token = await fetch('/auth')
@@ -14,26 +16,32 @@
       .then(r => r.access_token);
   });
 
-  $: {
-    if (artist) {
-      fetch(`/relate?artist=${artist.id}&token=${token}`)
-        .then(r => r.json())
-        .then(r => (related = r));
-    }
-  }
+  const relate = async artist => {
+    const url = `/relate?artist=${artist.id}&group=${group}&token=${token}`;
+    fetch(url)
+      .then(resp => resp.json())
+      .then(related => {
+        artists = {
+          ...artists,
+          [artist.name]: { ...artist, targets: Object.keys(related) },
+          ...related,
+        };
+        group++;
+      });
+  };
+
+  const onSelection = ({ detail }) => {
+    searchedArtist = { ...detail.selection.value, group: 0, targets: [] };
+    artists = {
+      [searchedArtist.name]: searchedArtist,
+    };
+    relate(searchedArtist);
+  };
 </script>
 
-<Search {token} bind:selection={artist} />
+<Search {token} on:selection={onSelection} />
 
-<h1>Result</h1>
-<pre>
-  {JSON.stringify(artist, null, 2)}
-</pre>
-
-<h2>Related</h2>
-<pre>
-  {JSON.stringify(related, null, 2)}
-</pre>
+<Viz {artists} onClick={relate} />
 
 <style>
   :global(body) {
