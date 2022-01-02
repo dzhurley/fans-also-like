@@ -9,6 +9,7 @@
   let data;
   let root;
   let width;
+  let height;
 
   const transformData = artists => {
     const groupById = new Map();
@@ -31,8 +32,6 @@
     .radius(d => d.y)
     .angle(d => d.x);
 
-  $: tree = cluster().size([2 * Math.PI, width / 2 - 100]);
-
   const bilink = root => {
     const leaves = root.leaves();
     if (leaves) {
@@ -50,23 +49,20 @@
     return root;
   };
 
+  $: size = Math.min(width, height);
+
+  $: viewBox = [-size / 2, -size / 2, size, size];
+
   $: {
     data = transformData(artists);
 
-    root = tree(
-      bilink(
-        hierarchy(data).sort(
-          (a, b) =>
-            ascending(a.height, b.height) || ascending(a.data.id, b.data.id),
-        ),
-      ),
-    );
-  }
+    let tree = cluster().size([2 * Math.PI, size / 2 - 100]);
 
-  $: viewBox = [-width / 2, -width / 2, width, width];
+    root = tree(bilink(hierarchy(data)));
+  }
 </script>
 
-<svelte:window bind:innerWidth={width} />
+<svelte:window bind:innerWidth={width} bind:innerHeight={height} />
 
 <svg {viewBox}>
   <g class="nodes">
@@ -76,10 +72,9 @@
       >
         <text
           on:click={() => {
-            console.log(d.data.id, artists);
             onClick(artists[d.data.id]);
           }}
-          dy="0.31em"
+          dy="0.3rem"
           x={d.x < Math.PI ? 6 : -6}
           text-anchor={d.x < Math.PI ? 'start' : 'end'}
           transform={d.x >= Math.PI ? 'rotate(180)' : null}>{d.data.id}</text

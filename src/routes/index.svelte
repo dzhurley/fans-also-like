@@ -1,4 +1,6 @@
 <script>
+  import '../app.css';
+
   import { onMount } from 'svelte';
 
   import Search from '$lib/search.svelte';
@@ -42,11 +44,3 @@
 <Search {token} on:selection={onSelection} />
 
 <Viz {artists} onClick={relate} />
-
-<style>
-  :global(body) {
-    font-family: Consolas, Monaco, monospace;
-    background-color: #002b36;
-    color: #839496;
-  }
-</style>

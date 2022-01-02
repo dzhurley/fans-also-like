@@ -9,7 +9,7 @@
   "devDependencies": {
     "@sveltejs/adapter-vercel": "next",
     "@sveltejs/kit": "next",
-    "svelte": "3.38.3"
+    "svelte": "3.44.2"
   },
   "dependencies": {
     "@tarekraafat/autocomplete.js": "10.2.6",

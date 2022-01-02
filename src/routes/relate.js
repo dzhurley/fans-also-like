@@ -12,8 +12,11 @@ export async function get({ query }) {
   ).then(r => r.json());
 
   return {
-    body: resp.artists.reduce((artists, artist) => {
-      return { ...artists, [artist.name]: { ...artist, group, targets: [] } };
+    body: resp.artists.reduce((artists, artist, index) => {
+      if (index < 5) {
+        artists[artist.name] = { ...artist, group, targets: [] };
+      }
+      return artists;
     }, {}),
   };
 }
