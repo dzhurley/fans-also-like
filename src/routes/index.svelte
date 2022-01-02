@@ -23,10 +23,28 @@
     fetch(url)
       .then(resp => resp.json())
       .then(related => {
+        // if related come up that have already been found, remove them to
+        // preserve existing targets
+        const remainingRelated = Object.entries(related).reduce(
+          (remaining, [relatedName, relatedArtist]) => {
+            const existing = Object.keys(artists).some(
+              name => relatedName === name,
+            );
+            if (!existing) {
+              remaining[relatedName] = relatedArtist;
+            }
+            return remaining;
+          },
+          {},
+        );
+
         artists = {
           ...artists,
-          [artist.name]: { ...artist, targets: Object.keys(related) },
-          ...related,
+          [artist.name]: {
+            ...artist,
+            targets: Object.keys(related),
+          },
+          ...remainingRelated,
         };
         group++;
       });

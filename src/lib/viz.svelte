@@ -1,4 +1,5 @@
 <script>
+  /* much taken from https://observablehq.com/@d3/bilevel-edge-bundling */
   import { ascending } from 'd3-array';
   import { cluster, hierarchy } from 'd3-hierarchy';
   import { curveBundle, lineRadial } from 'd3-shape';
@@ -64,31 +65,37 @@
 
 <svelte:window bind:innerWidth={width} bind:innerHeight={height} />
 
-<svg {viewBox}>
-  <g class="nodes">
-    {#each root.leaves() as d (d.data.id)}
-      <g
-        transform={`rotate(${(d.x * 180) / Math.PI - 90}) translate(${d.y},0)`}
-      >
-        <text
-          on:click={() => {
-            onClick(artists[d.data.id]);
-          }}
-          dy="0.3rem"
-          x={d.x < Math.PI ? 6 : -6}
-          text-anchor={d.x < Math.PI ? 'start' : 'end'}
-          transform={d.x >= Math.PI ? 'rotate(180)' : null}>{d.data.id}</text
-        ></g
-      >
-    {/each}
-  </g>
+{#if root.height > 0}
+  <svg {viewBox}>
+    <g class="nodes">
+      {#each root.leaves() as d (d.data.id)}
+        <g
+          transform={`rotate(${(d.x * 180) / Math.PI - 90}) translate(${
+            d.y
+          },0)`}
+        >
+          <text
+            on:click={() => {
+              onClick(artists[d.data.id]);
+            }}
+            dy="0.3rem"
+            x={d.x < Math.PI ? 6 : -6}
+            text-anchor={d.x < Math.PI ? 'start' : 'end'}
+            transform={d.x >= Math.PI ? 'rotate(180)' : null}>{d.data.id}</text
+          ></g
+        >
+      {/each}
+    </g>
 
-  <g class="links">
-    {#each root.leaves().flatMap(leaf => leaf.outgoing) as [incoming, outgoing]}
-      <path d={line(incoming.path(outgoing))} />
-    {/each}
-  </g>
-</svg>
+    <g class="links">
+      {#each root
+        .leaves()
+        .flatMap(leaf => leaf.outgoing) as [incoming, outgoing]}
+        <path d={line(incoming.path(outgoing))} />
+      {/each}
+    </g>
+  </svg>
+{/if}
 
 <style>
   .nodes text {
