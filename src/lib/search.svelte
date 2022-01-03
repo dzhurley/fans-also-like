@@ -22,9 +22,6 @@
         keys: ['name'],
       },
       debounce: 100,
-      resultItem: {
-        highlight: true,
-      },
       wrapper: false,
     });
   });
@@ -45,10 +42,8 @@
 
 <style>
   input {
-    margin: 1rem auto;
+    margin: auto;
     padding: 0.5rem;
-    display: flex;
-    justify-content: space-around;
     width: 20rem;
   }
 
@@ -56,11 +51,11 @@
     position: absolute;
     list-style: none;
     left: 50%;
-    transform: translate(calc(-50%), -1rem);
+    transform: translate(-50%, 3.5rem);
     padding: 0 0.5rem;
     margin: 0;
     width: 20rem;
-    font-size: 0.8rem;
+    font-size: 12px;
   }
 
   :global(#autoComplete_list_1 li) {
@@ -76,8 +71,14 @@
     cursor: pointer;
   }
 
+  :global(#autoComplete_list_1 li:first-of-type) {
+    border-top: 1px solid #8f8f9d;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+  }
+
   :global(#autoComplete_list_1 li:last-of-type) {
-    border-bottom-left-radius: 2px;
-    border-bottom-right-radius: 2px;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
   }
 </style>

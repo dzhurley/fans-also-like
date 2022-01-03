@@ -57,7 +57,7 @@
   $: {
     data = transformData(artists);
 
-    let tree = cluster().size([2 * Math.PI, size / 2 - 100]);
+    let tree = cluster().size([2 * Math.PI, size / 2 - 200]);
 
     root = tree(bilink(hierarchy(data)));
   }
@@ -75,11 +75,9 @@
           },0)`}
         >
           <text
-            on:click={() => {
-              onClick(artists[d.data.id]);
-            }}
-            dy="0.3rem"
+            on:click={() => onClick(artists[d.data.id])}
             x={d.x < Math.PI ? 6 : -6}
+            y={4}
             text-anchor={d.x < Math.PI ? 'start' : 'end'}
             transform={d.x >= Math.PI ? 'rotate(180)' : null}>{d.data.id}</text
           ></g
@@ -98,6 +96,12 @@
 {/if}
 
 <style>
+  svg {
+    font-size: 12px;
+    width: 100%;
+    height: 100%;
+  }
+
   .nodes text {
     font-family: Consolas, Monaco, monospace;
     fill: #839496;
