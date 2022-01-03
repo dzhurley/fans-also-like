@@ -61,12 +61,29 @@
 
     root = tree(bilink(hierarchy(data)));
   }
+
+  let hovered = false;
+  let hoveredLinks = [];
+  let links = [];
+
+  $: links = root
+    .leaves()
+    .flatMap(leaf => leaf.outgoing)
+    .map(([incoming, outgoing]) => {
+      const active = hoveredLinks.some(
+        ([src, dest]) =>
+          (src === incoming.data.id && dest === outgoing.data.id) ||
+          (dest === incoming.data.id && src === outgoing.data.id),
+      );
+      return [incoming, outgoing, active];
+    })
+    .sort((a, b) => (a[2] && !b[2] ? 1 : -1));
 </script>
 
 <svelte:window bind:innerWidth={width} bind:innerHeight={height} />
 
 {#if root.height > 0}
-  <svg {viewBox}>
+  <svg {viewBox} class:hovered>
     <g class="nodes">
       {#each root.leaves() as d (d.data.id)}
         <g
@@ -74,8 +91,21 @@
             d.y
           },0)`}
         >
+          <!-- svelte-ignore a11y-mouse-events-have-key-events -->
           <text
             on:click={() => onClick(artists[d.data.id])}
+            on:mouseover={() => {
+              hovered = true;
+              const addLink = ([src, dest]) => {
+                hoveredLinks = [...hoveredLinks, [src.data.id, dest.data.id]];
+              };
+              d.incoming.map(addLink);
+              d.outgoing.map(addLink);
+            }}
+            on:mouseout={() => {
+              hovered = false;
+              hoveredLinks = [];
+            }}
             x={d.x < Math.PI ? 6 : -6}
             y={4}
             text-anchor={d.x < Math.PI ? 'start' : 'end'}
@@ -86,10 +116,8 @@
     </g>
 
     <g class="links">
-      {#each root
-        .leaves()
-        .flatMap(leaf => leaf.outgoing) as [incoming, outgoing]}
-        <path d={line(incoming.path(outgoing))} />
+      {#each links as [incoming, outgoing, active]}
+        <path d={line(incoming.path(outgoing))} class:active />
       {/each}
     </g>
   </svg>
@@ -115,5 +143,16 @@
 
   .links path {
     mix-blend-mode: multiply;
+  }
+
+  .hovered .links path {
+    mix-blend-mode: unset;
+    z-index: 1;
+  }
+
+  .links path.active {
+    stroke: black;
+    stroke-width: 2px;
+    z-index: 10;
   }
 </style>
