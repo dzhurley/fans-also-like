@@ -4,6 +4,8 @@
   import { cluster, hierarchy } from 'd3-hierarchy';
   import { curveBundle, lineRadial } from 'd3-shape';
 
+  import { fade } from 'svelte/transition';
+
   export let artists = {};
   export let onClick;
 
@@ -62,7 +64,7 @@
     root = tree(bilink(hierarchy(data)));
   }
 
-  let hovered = false;
+  let hovered = null;
   let hoveredLinks = [];
   let links = [];
 
@@ -91,11 +93,23 @@
             d.y
           },0)`}
         >
+          {#if d.data.id === hovered?.id}
+            <rect
+              transition:fade={{ duration: 300 }}
+              rx="5"
+              x="-2"
+              y={-(hovered.height + 8) / 2}
+              width={hovered.width + 14}
+              height={hovered.height + 8}
+            />
+          {/if}
           <!-- svelte-ignore a11y-mouse-events-have-key-events -->
           <text
+            class:hovered={d.data.id === hovered?.id}
             on:click={() => onClick(artists[d.data.id])}
-            on:mouseover={() => {
-              hovered = true;
+            on:mouseover={evt => {
+              const { width, height } = evt.target.getBBox();
+              hovered = { id: d.data.id, width, height };
               const addLink = ([src, dest]) => {
                 hoveredLinks = [...hoveredLinks, [src.data.id, dest.data.id]];
               };
@@ -103,7 +117,7 @@
               d.outgoing.map(addLink);
             }}
             on:mouseout={() => {
-              hovered = false;
+              hovered = null;
               hoveredLinks = [];
             }}
             x={d.x < Math.PI ? 6 : -6}
@@ -130,9 +144,21 @@
     height: 100%;
   }
 
+  .nodes rect {
+    fill: #839496;
+    cursor: pointer;
+  }
+
   .nodes text {
     font-family: Consolas, Monaco, monospace;
     fill: #839496;
+    cursor: pointer;
+    transition: fill 0.3s;
+  }
+
+  .nodes text.hovered {
+    font-family: Consolas, Monaco, monospace;
+    fill: white;
     cursor: pointer;
   }
 
@@ -151,8 +177,7 @@
   }
 
   .links path.active {
-    stroke: black;
-    stroke-width: 2px;
+    stroke-width: 3px;
     z-index: 10;
   }
 </style>
