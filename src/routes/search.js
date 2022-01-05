@@ -1,9 +1,9 @@
-export async function get({ query }) {
+export async function get({ url }) {
   const resp = await fetch(
-    `https://api.spotify.com/v1/search?q=${query.get('q')}&type=artist`,
+    `https://api.spotify.com/v1/search?q=${url.searchParams.get('q')}&type=artist`,
     {
       headers: {
-        Authorization: `Bearer ${query.get('token')}`,
+        Authorization: `Bearer ${url.searchParams.get('token')}`,
       },
     },
   ).then(r => r.json());

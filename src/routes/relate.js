@@ -1,12 +1,12 @@
-export async function get({ query }) {
-  const artist = query.get('artist');
-  const group = parseInt(query.get('group'));
+export async function get({ url }) {
+  const artist = url.searchParams.get('artist');
+  const group = parseInt(url.searchParams.get('group'));
 
   const resp = await fetch(
     `https://api.spotify.com/v1/artists/${artist}/related-artists`,
     {
       headers: {
-        Authorization: `Bearer ${query.get('token')}`,
+        Authorization: `Bearer ${url.searchParams.get('token')}`,
       },
     },
   ).then(r => r.json());
