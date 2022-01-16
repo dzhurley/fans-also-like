@@ -1,6 +1,7 @@
 <script>
   import '../app.css';
 
+  import { schemeTableau10 } from 'd3-scale-chromatic';
   import { onMount } from 'svelte';
 
   import Search from '$lib/search.svelte';
@@ -51,7 +52,12 @@
   };
 
   const onSelection = ({ detail }) => {
-    searchedArtist = { ...detail.selection.value, group: 0, targets: [] };
+    searchedArtist = {
+      ...detail.selection.value,
+      group: 0,
+      color: schemeTableau10[0],
+      targets: [],
+    };
     artists = {
       [searchedArtist.name]: searchedArtist,
     };

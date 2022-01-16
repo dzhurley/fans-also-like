@@ -1,3 +1,5 @@
+import { schemeTableau10 } from 'd3-scale-chromatic';
+
 export async function get({ url }) {
   const artist = url.searchParams.get('artist');
   const group = parseInt(url.searchParams.get('group'));
@@ -14,7 +16,12 @@ export async function get({ url }) {
   return {
     body: resp.artists.reduce((artists, artist, index) => {
       if (index < 5) {
-        artists[artist.name] = { ...artist, group, targets: [] };
+        artists[artist.name] = {
+          ...artist,
+          group,
+          color: schemeTableau10[group % 10],
+          targets: [],
+        };
       }
       return artists;
     }, {}),

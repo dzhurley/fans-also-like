@@ -17,14 +17,14 @@
   const transformData = artists => {
     const groupById = new Map();
 
-    Object.values(artists).forEach(({ name, group, targets }) => {
+    Object.values(artists).forEach(({ color, name, group, targets }) => {
       let currentGroup = groupById.get(group);
       if (!currentGroup) {
         currentGroup = { id: group, children: [] };
         groupById.set(group, currentGroup);
       }
 
-      currentGroup.children.push({ id: name, group, targets });
+      currentGroup.children.push({ color, id: name, group, targets });
     });
 
     return { children: [...groupById.values()] };
@@ -64,28 +64,57 @@
     root = tree(bilink(hierarchy(data)));
   }
 
-  let hovered = null;
-  let hoveredLinks = [];
+  let hovering = null;
+  let hoveredPairs = [];
   let links = [];
+  let hoveredLinks = [];
 
-  $: links = root
-    .leaves()
-    .flatMap(leaf => leaf.outgoing)
-    .map(([incoming, outgoing]) => {
-      const active = hoveredLinks.some(
-        ([src, dest]) =>
-          (src === incoming.data.id && dest === outgoing.data.id) ||
-          (dest === incoming.data.id && src === outgoing.data.id),
-      );
-      return [incoming, outgoing, active];
-    })
-    .sort((a, b) => (a[2] && !b[2] ? 1 : -1));
+  let gradients = {};
+
+  $: {
+    const newHoveredLinks = [];
+    const newGrads = {};
+
+    links = root
+      .leaves()
+      .flatMap(leaf => leaf.outgoing)
+      .map(link => {
+        const active = hoveredPairs.some(
+          ([src, dest]) =>
+            (src === link[0].data.id && dest === link[1].data.id) ||
+            (dest === link[0].data.id && src === link[1].data.id),
+        );
+        if (active) {
+          newHoveredLinks.push(link);
+        }
+
+        const gradId = `${link[0].data.group}-${link[1].data.group}`;
+        if (!(gradId in newGrads)) {
+          newGrads[gradId] = [link[0].data.color, link[1].data.color];
+        }
+        return link;
+      });
+
+    hoveredLinks = newHoveredLinks;
+    gradients = newGrads;
+  }
 </script>
 
 <svelte:window bind:innerWidth={width} bind:innerHeight={height} />
 
 {#if root.height > 0}
-  <svg {viewBox} class:hovered>
+  <svg {viewBox} class:hovering>
+    {#each Object.entries(gradients) as grad}
+      <defs>
+        <defs>
+          <linearGradient id={`grad-${grad[0]}`}>
+            <stop offset="0%" stop-color={grad[1][1]} />
+            <stop offset="100%" stop-color={grad[1][0]} />
+          </linearGradient>
+        </defs>
+      </defs>
+    {/each}
+
     <g class="nodes">
       {#each root.leaves() as d (d.data.id)}
         <g
@@ -93,35 +122,38 @@
             d.y
           },0)`}
         >
-          {#if d.data.id === hovered?.id}
+          {#if d.data.id === hovering?.id}
             <rect
-              transition:fade={{ duration: 300 }}
+              fill={d.data.color}
               rx="5"
               x="-2"
-              y={-(hovered.height + 8) / 2}
-              width={hovered.width + 14}
-              height={hovered.height + 8}
+              y={-(hovering.height + 8) / 2}
+              width={hovering.width + 14}
+              height={hovering.height + 8}
             />
           {/if}
+
           <!-- svelte-ignore a11y-mouse-events-have-key-events -->
           <text
-            class:hovered={d.data.id === hovered?.id}
+            class:hovering={d.data.id === hovering?.id}
             on:click={() => onClick(artists[d.data.id])}
             on:mouseover={evt => {
               const { width, height } = evt.target.getBBox();
-              hovered = { id: d.data.id, width, height };
+              hovering = { id: d.data.id, width, height };
               const addLink = ([src, dest]) => {
-                hoveredLinks = [...hoveredLinks, [src.data.id, dest.data.id]];
+                hoveredPairs = [...hoveredPairs, [src.data.id, dest.data.id]];
               };
               d.incoming.map(addLink);
               d.outgoing.map(addLink);
             }}
             on:mouseout={() => {
-              hovered = null;
+              hovering = null;
+              hoveredPairs = [];
               hoveredLinks = [];
             }}
             x={d.x < Math.PI ? 6 : -6}
             y={4}
+            fill={d.data.color}
             text-anchor={d.x < Math.PI ? 'start' : 'end'}
             transform={d.x >= Math.PI ? 'rotate(180)' : null}>{d.data.id}</text
           ></g
@@ -130,8 +162,21 @@
     </g>
 
     <g class="links">
-      {#each links as [incoming, outgoing, active]}
-        <path d={line(incoming.path(outgoing))} class:active />
+      {#each links as [incoming, outgoing]}
+        <path
+          stroke={`url(#grad-${incoming.data.group}-${outgoing.data.group})`}
+          d={line(incoming.path(outgoing))}
+        />
+      {/each}
+    </g>
+
+    <g class="links">
+      {#each hoveredLinks as [incoming, outgoing]}
+        <path
+          stroke={`url(#grad-${incoming.data.group}-${outgoing.data.group})`}
+          d={line(incoming.path(outgoing))}
+          class="active"
+        />
       {/each}
     </g>
   </svg>
@@ -145,25 +190,21 @@
   }
 
   .nodes rect {
-    fill: #839496;
     cursor: pointer;
   }
 
   .nodes text {
     font-family: Consolas, Monaco, monospace;
-    fill: #839496;
     cursor: pointer;
-    transition: fill 0.3s;
   }
 
-  .nodes text.hovered {
+  .nodes text.hovering {
     font-family: Consolas, Monaco, monospace;
     fill: white;
     cursor: pointer;
   }
 
   .links {
-    stroke: #839496;
     fill: none;
   }
 
@@ -171,13 +212,11 @@
     mix-blend-mode: multiply;
   }
 
-  .hovered .links path {
+  .hovering .links path {
     mix-blend-mode: unset;
-    z-index: 1;
   }
 
   .links path.active {
     stroke-width: 3px;
-    z-index: 10;
   }
 </style>
