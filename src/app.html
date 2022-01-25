@@ -7,8 +7,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="follow, index" />
     <title>fans also like</title>
+
+    <style>
+      #svelte {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: 3.5rem 1fr;
+        max-height: 100vh;
+      }
+    </style>
+
     %svelte.head%
   </head>
+
   <body>
     <div id="svelte">%svelte.body%</div>
   </body>

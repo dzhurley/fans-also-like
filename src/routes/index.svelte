@@ -68,12 +68,3 @@
 <Search {token} on:selection={onSelection} />
 
 <Viz {artists} onClick={relate} />
-
-<style>
-  :global(#svelte) {
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: 3.5rem 1fr;
-    max-height: 100vh;
-  }
-</style>

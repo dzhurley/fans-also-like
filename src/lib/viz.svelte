@@ -69,12 +69,8 @@
   let links = [];
   let hoveredLinks = [];
 
-  let gradients = {};
-
   $: {
     const newHoveredLinks = [];
-    const newGrads = {};
-
     links = root
       .leaves()
       .flatMap(leaf => leaf.outgoing)
@@ -87,16 +83,9 @@
         if (active) {
           newHoveredLinks.push(link);
         }
-
-        const gradId = `${link[0].data.group}-${link[1].data.group}`;
-        if (!(gradId in newGrads)) {
-          newGrads[gradId] = [link[0].data.color, link[1].data.color];
-        }
         return link;
       });
-
     hoveredLinks = newHoveredLinks;
-    gradients = newGrads;
   }
 </script>
 
@@ -104,16 +93,17 @@
 
 {#if root.height > 0}
   <svg {viewBox} class:hovering>
-    {#each Object.entries(gradients) as grad}
-      <defs>
-        <defs>
-          <linearGradient id={`grad-${grad[0]}`}>
-            <stop offset="0%" stop-color={grad[1][1]} />
-            <stop offset="100%" stop-color={grad[1][0]} />
-          </linearGradient>
-        </defs>
-      </defs>
-    {/each}
+    <g class="links">
+      {#each links as [incoming, outgoing]}
+        <path d={line(incoming.path(outgoing))} />
+      {/each}
+    </g>
+
+    <g class="links">
+      {#each hoveredLinks as [incoming, outgoing]}
+        <path d={line(incoming.path(outgoing))} class="active" />
+      {/each}
+    </g>
 
     <g class="nodes">
       {#each root.leaves() as d (d.data.id)}
@@ -160,25 +150,6 @@
         >
       {/each}
     </g>
-
-    <g class="links">
-      {#each links as [incoming, outgoing]}
-        <path
-          stroke={`url(#grad-${incoming.data.group}-${outgoing.data.group})`}
-          d={line(incoming.path(outgoing))}
-        />
-      {/each}
-    </g>
-
-    <g class="links">
-      {#each hoveredLinks as [incoming, outgoing]}
-        <path
-          stroke={`url(#grad-${incoming.data.group}-${outgoing.data.group})`}
-          d={line(incoming.path(outgoing))}
-          class="active"
-        />
-      {/each}
-    </g>
   </svg>
 {/if}
 
@@ -206,6 +177,7 @@
 
   .links {
     fill: none;
+    stroke: #c2c9ca;
   }
 
   .links path {
@@ -218,5 +190,6 @@
 
   .links path.active {
     stroke-width: 3px;
+    stroke: #839496;
   }
 </style>
