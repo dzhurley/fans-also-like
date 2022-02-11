@@ -4,14 +4,16 @@
   import { schemeTableau10 } from 'd3-scale-chromatic';
   import { onMount } from 'svelte';
 
+  import Info from '$lib/info.svelte';
   import Search from '$lib/search.svelte';
   import Viz from '$lib/viz.svelte';
 
   let token = '';
 
+  let group = 1;
   let artists = {};
   let searchedArtist;
-  let group = 1;
+  let infoArtist;
 
   onMount(async () => {
     token = await fetch('/auth')
@@ -63,8 +65,20 @@
     };
     relate(searchedArtist);
   };
+
+  const showInfo = artist => {
+    infoArtist = artist;
+  };
+
+  const onInfoClose = () => {
+    infoArtist = null;
+  };
 </script>
 
 <Search {token} on:selection={onSelection} />
 
-<Viz {artists} onClick={relate} />
+<Viz {artists} {infoArtist} onInfoClick={showInfo} onRelateClick={relate} />
+
+{#if infoArtist}
+  <Info artist={infoArtist} onClose={onInfoClose} />
+{/if}

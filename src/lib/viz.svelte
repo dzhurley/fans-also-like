@@ -7,7 +7,9 @@
   import { fade } from 'svelte/transition';
 
   export let artists = {};
-  export let onClick;
+  export let infoArtist;
+  export let onRelateClick;
+  export let onInfoClick;
 
   let data;
   let root;
@@ -56,12 +58,26 @@
 
   $: viewBox = [-size / 2, -size / 2, size, size];
 
+  let nodesEl;
+  let nodeSizes = {};
+
   $: {
     data = transformData(artists);
 
     let tree = cluster().size([2 * Math.PI, size / 2 - 200]);
 
     root = tree(bilink(hierarchy(data)));
+
+    setTimeout(() => {
+      if (nodesEl) {
+        const newNodeSizes = {};
+        nodesEl.querySelectorAll('text').forEach(text => {
+          const { width, height } = text.getBBox();
+          newNodeSizes[text.textContent] = { width, height };
+        });
+        nodeSizes = newNodeSizes;
+      }
+    }, 0);
   }
 
   let hovering = null;
@@ -87,12 +103,20 @@
       });
     hoveredLinks = newHoveredLinks;
   }
+
+  $: {
+    if (!infoArtist) {
+      hovering = null;
+      hoveredPairs = [];
+      hoveredLinks = [];
+    }
+  }
 </script>
 
 <svelte:window bind:innerWidth={width} bind:innerHeight={height} />
 
 {#if root.height > 0}
-  <svg {viewBox} class:hovering>
+  <svg {viewBox} class:hovering class:infoArtist>
     <g class="links">
       {#each links as [incoming, outgoing]}
         <path d={line(incoming.path(outgoing))} />
@@ -105,42 +129,63 @@
       {/each}
     </g>
 
-    <g class="nodes">
+    <g class="nodes" bind:this={nodesEl}>
       {#each root.leaves() as d (d.data.id)}
+        <!-- svelte-ignore a11y-mouse-events-have-key-events -->
         <g
           transform={`rotate(${(d.x * 180) / Math.PI - 90}) translate(${
             d.y
           },0)`}
-        >
-          {#if d.data.id === hovering?.id}
-            <rect
-              fill={d.data.color}
-              rx="5"
-              x="-2"
-              y={-(hovering.height + 8) / 2}
-              width={hovering.width + 14}
-              height={hovering.height + 8}
-            />
-          {/if}
-
-          <!-- svelte-ignore a11y-mouse-events-have-key-events -->
-          <text
-            class:hovering={d.data.id === hovering?.id}
-            on:click={() => onClick(artists[d.data.id])}
-            on:mouseover={evt => {
-              const { width, height } = evt.target.getBBox();
-              hovering = { id: d.data.id, width, height };
+          on:click={evt => {
+            if (!infoArtist && evt.target.nodeName !== 'circle') {
+              onRelateClick(artists[d.data.id]);
+            }
+          }}
+          on:mouseenter={() => {
+            if (!infoArtist) {
+              hovering = d.data.id;
               const addLink = ([src, dest]) => {
                 hoveredPairs = [...hoveredPairs, [src.data.id, dest.data.id]];
               };
               d.incoming.map(addLink);
               d.outgoing.map(addLink);
-            }}
-            on:mouseout={() => {
+            }
+          }}
+          on:mouseleave={() => {
+            if (!infoArtist) {
               hovering = null;
               hoveredPairs = [];
               hoveredLinks = [];
+            }
+          }}
+        >
+          <rect
+            fill={hovering === d.data.id ? d.data.color : 'none'}
+            rx="5"
+            x="-5"
+            y={-((nodeSizes[d.data.id]?.height ?? 0) + 8) / 2}
+            width={(nodeSizes[d.data.id]?.width ?? 0) + 20}
+            height={(nodeSizes[d.data.id]?.height ?? 0) + 8}
+          />
+          <circle
+            stroke={hovering === d.data.id ? d.data.color : 'none'}
+            stroke-width="12"
+            fill={infoArtist?.name === d.data.id
+              ? '#839496'
+              : hovering === d.data.id
+              ? 'white'
+              : 'none'}
+            on:click={evt => {
+              if ((evt.target, evt.currentTarget.nodeName === 'circle')) {
+                onInfoClick(artists[d.data.id]);
+              }
             }}
+            r="16"
+            cx="-16"
+          />
+
+          <text
+            class:hovering={d.data.id === hovering}
             x={d.x < Math.PI ? 6 : -6}
             y={4}
             fill={d.data.color}
@@ -160,19 +205,29 @@
     height: 100%;
   }
 
-  .nodes rect {
+  rect,
+  circle,
+  text {
     cursor: pointer;
   }
 
-  .nodes text {
+  .infoArtist rect,
+  .infoArtist circle,
+  .infoArtist text {
+    cursor: default;
+  }
+
+  circle:hover {
+    fill: #839496;
+  }
+
+  text {
     font-family: Consolas, Monaco, monospace;
-    cursor: pointer;
   }
 
-  .nodes text.hovering {
+  text.hovering {
     font-family: Consolas, Monaco, monospace;
     fill: white;
-    cursor: pointer;
   }
 
   .links {
@@ -180,15 +235,15 @@
     stroke: #c2c9ca;
   }
 
-  .links path {
+  path {
     mix-blend-mode: multiply;
   }
 
-  .hovering .links path {
+  .hovering path {
     mix-blend-mode: unset;
   }
 
-  .links path.active {
+  path.active {
     stroke-width: 3px;
     stroke: #839496;
   }
