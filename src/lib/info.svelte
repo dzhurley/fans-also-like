@@ -3,28 +3,20 @@
   export let onClose;
 
   const imageUrl = artist.images?.[0]?.url;
-
-  const genres = artist.genres.slice(0, 3);
 </script>
 
 <section class="modal" style="--artist-color: {artist.color}">
-  {#if imageUrl}
-    <img src={imageUrl} alt={`${artist.name} image`} />
-  {/if}
-
   <span class="close-button" on:click={onClose}>x</span>
 
   <section class="header">
-    <h1>{artist.name}</h1>
-
-    {#if genres.length}
-      <ul class="genres">
-        {#each genres as genre}
-          <li>{genre}</li>
-        {/each}
-      </ul>
+    {#if imageUrl}
+      <img src={imageUrl} alt={`${artist.name} image`} />
     {/if}
+
+    <h1>{artist.name}</h1>
   </section>
+
+  <section class="content">{@html artist.bio}</section>
 </section>
 
 <style>
@@ -37,25 +29,13 @@
 
     background: white;
     width: 450px;
-    height: 200px;
-    border: 1px solid var(--artist-color);
+    height: 400px;
+    border: 5px solid var(--artist-color);
     border-radius: 1rem;
     padding: 1rem;
-  }
 
-  img {
-    position: absolute;
-    top: -2rem;
-    left: -2rem;
-    width: 13rem;
-    height: 13rem;
-    max-width: 13rem;
-    max-height: 13rem;
-    border-radius: 50%;
-    border: 7.5px solid var(--artist-color);
-    overflow: hidden;
-    object-fit: cover;
-    z-index: -1;
+    display: flex;
+    flex-direction: column;
   }
 
   .close-button {
@@ -75,26 +55,34 @@
     border-radius: 50%;
   }
 
-  h1 {
-    margin-top: 1rem;
-    padding-left: 12rem;
-    line-height: 1.5;
-  }
-
-  .genres {
-    list-style: none;
-    margin: 0;
-    padding-left: 12rem;
+  .header {
     display: flex;
-    flex-wrap: wrap;
   }
 
-  .genres li {
-    font-size: 11px;
-    border: 1px solid #a4a4a4;
-    border-radius: 8px;
-    padding: 3px 6px;
-    margin: 3px;
-    color: #a4a4a4;
+  h1 {
+    line-height: 1.5;
+    font-size: 1.4rem;
+    margin-left: 1rem;
+  }
+
+  img {
+    min-width: 13rem;
+    min-height: 13rem;
+    width: 13rem;
+    height: 13rem;
+    margin: -4rem 1rem 1rem -4rem;
+    border-radius: 50%;
+    border: 7.5px solid var(--artist-color);
+    overflow: hidden;
+    object-fit: cover;
+    z-index: -1;
+  }
+
+  .content {
+    border: 1px solid var(--artist-color);
+    border-radius: 5px;
+    overflow-y: scroll;
+    padding: 0.5rem 1rem;
+    line-height: 1.75;
   }
 </style>

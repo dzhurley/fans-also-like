@@ -66,8 +66,16 @@
     relate(searchedArtist);
   };
 
-  const showInfo = artist => {
-    infoArtist = artist;
+  const showInfo = async artist => {
+    fetch(`/info?artist=${artist.name}`)
+      .then(resp => resp.json())
+      .then(({ bio, bioFull }) => {
+        console.log({ bio, bioFull });
+        infoArtist = {
+          ...artist,
+          bio,
+        };
+      });
   };
 
   const onInfoClose = () => {
