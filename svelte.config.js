@@ -4,8 +4,7 @@ export default {
   kit: {
     adapter: vercel(),
     files: {
-      lib: 'src/lib'
+      lib: 'src/lib',
     },
-    target: '#svelte',
   },
 };
