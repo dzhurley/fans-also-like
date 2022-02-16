@@ -1,9 +1,9 @@
 export async function get({ url }) {
   const { VITE_LASTFM_TOKEN } = import.meta.env;
-  const artist = url.searchParams.get('artist');
+  const name = url.searchParams.get('name');
 
-  const resp = await fetch(
-    `http://ws.audioscrobbler.com/2.0/?method=artist.getinfo&artist=${artist}&api_key=${VITE_LASTFM_TOKEN}&format=json`,
+  const bioResp = await fetch(
+    `http://ws.audioscrobbler.com/2.0/?method=artist.getinfo&artist=${name}&api_key=${VITE_LASTFM_TOKEN}&format=json`,
     {
       method: 'GET',
       headers: {
@@ -16,13 +16,34 @@ export async function get({ url }) {
     `\\s*?<a href="https://www.last.fm/music/.*">Read more on Last.fm</a>. User-contributed text is available under the Creative Commons By-SA License; additional terms may apply.`,
   );
 
+  const bio = bioResp.artist.bio.content
+    .replace(lastWords, '')
+    .trim()
+    .replace(/\n/g, '<br />');
+
+  const artist = url.searchParams.get('artist');
+
+  const tracksResp = await fetch(
+    `https://api.spotify.com/v1/artists/${artist}/top-tracks?market=US`,
+    {
+      headers: {
+        Authorization: `Bearer ${url.searchParams.get('token')}`,
+      },
+    },
+  ).then(r => r.json());
+
+  const track = tracksResp.tracks.find(
+    track => track.is_playable && !!track.preview_url,
+  );
+
   return {
     body: {
-      bioFull: resp.artist.bio.content,
-      bio: resp.artist.bio.content
-        .replace(lastWords, '')
-        .trim()
-        .replace(/\n/g, '<br />'),
+      bio,
+      song: {
+        link: track.external_urls.spotify,
+        src: track.preview_url,
+        name: track.name,
+      },
     },
   };
 }

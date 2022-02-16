@@ -1,4 +1,6 @@
 <script>
+  import Player from './player.svelte';
+
   export let artist;
   export let onClose;
 
@@ -6,7 +8,22 @@
 </script>
 
 <section class="modal" style="--artist-color: {artist.color}">
-  <span class="close-button" on:click={onClose}>x</span>
+  <span class="close-button" on:click={onClose}>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="white"
+      stroke-width="2.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <line x1="18" y1="6" x2="6" y2="18" />
+      <line x1="6" y1="6" x2="18" y2="18" />
+    </svg>
+  </span>
 
   <section class="header">
     {#if imageUrl}
@@ -17,6 +34,8 @@
   </section>
 
   <section class="content">{@html artist.bio}</section>
+
+  <Player song={artist.song} color={artist.color} />
 </section>
 
 <style>
@@ -47,8 +66,8 @@
     justify-content: center;
 
     margin: 0.5rem;
-    width: 3rem;
-    height: 3rem;
+    width: 2.5rem;
+    height: 2.5rem;
     cursor: pointer;
     background-color: var(--artist-color);
     color: white;
@@ -79,7 +98,7 @@
   }
 
   .content {
-    border: 1px solid var(--artist-color);
+    border: 2.5px solid var(--artist-color);
     border-radius: 5px;
     overflow-y: scroll;
     padding: 0.5rem 1rem;

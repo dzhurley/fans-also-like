@@ -67,13 +67,13 @@
   };
 
   const showInfo = async artist => {
-    fetch(`/info?artist=${artist.name}`)
+    fetch(`/info?artist=${artist.id}&name=${artist.name}&token=${token}`)
       .then(resp => resp.json())
-      .then(({ bio, bioFull }) => {
-        console.log({ bio, bioFull });
+      .then(({ bio, song }) => {
         infoArtist = {
           ...artist,
           bio,
+          song,
         };
       });
   };
