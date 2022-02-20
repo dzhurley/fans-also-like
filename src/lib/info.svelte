@@ -92,6 +92,7 @@
     margin: -4rem 1rem 1rem -4rem;
     border-radius: 50%;
     border: 7.5px solid var(--artist-color);
+
     overflow: hidden;
     object-fit: cover;
     z-index: -1;

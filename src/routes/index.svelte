@@ -1,6 +1,5 @@
 <script>
   import '../app.css';
-
   import { schemeTableau10 } from 'd3-scale-chromatic';
   import { onMount } from 'svelte';
 
@@ -9,6 +8,7 @@
   import Viz from '$lib/viz.svelte';
 
   let token = '';
+  let pristine = true;
 
   let group = 1;
   let artists = {};
@@ -54,6 +54,9 @@
   };
 
   const onSelection = ({ detail }) => {
+    if (pristine) {
+      pristine = false;
+    }
     searchedArtist = {
       ...detail.selection.value,
       group: 0,
@@ -83,10 +86,43 @@
   };
 </script>
 
-<Search {token} on:selection={onSelection} />
+<div id="svelte" class:pristine>
+  {#if pristine}
+    <section class="title">
+      <h1>fans also like...</h1>
+      <p>discover music you might also like using music you know you already do</p>
+    </section>
+  {/if}
 
-<Viz {artists} {infoArtist} onInfoClick={showInfo} onRelateClick={relate} />
+  <Search {token} on:selection={onSelection} />
 
-{#if infoArtist}
-  <Info artist={infoArtist} onClose={onInfoClose} />
-{/if}
+  {#if !pristine}
+    <Viz {artists} {infoArtist} onInfoClick={showInfo} onRelateClick={relate} />
+
+    {#if infoArtist}
+      <Info artist={infoArtist} onClose={onInfoClose} />
+    {/if}
+  {/if}
+</div>
+
+<style>
+  #svelte {
+    display: flex;
+    flex-direction: column;
+  }
+
+  #svelte.pristine {
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .title {
+    width: 20rem;
+  }
+
+  p {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+</style>
