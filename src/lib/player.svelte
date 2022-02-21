@@ -50,7 +50,6 @@
   .song {
     display: flex;
     align-items: center;
-    margin-top: 1rem;
   }
 
   .controls {
@@ -58,9 +57,9 @@
     align-items: center;
     justify-content: center;
 
-    margin-right: 0.5rem;
-    width: 3rem;
-    height: 3rem;
+    margin: 0.75rem 0.75rem 0.75rem 0rem;
+    width: 2.5rem;
+    height: 2.5rem;
     cursor: pointer;
     background-color: var(--color);
     color: white;

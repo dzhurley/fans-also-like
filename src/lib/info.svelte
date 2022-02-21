@@ -33,9 +33,8 @@
     <h1>{artist.name}</h1>
   </section>
 
-  <section class="content">{@html artist.bio}</section>
-
   <Player song={artist.song} color={artist.color} />
+  <section class="content">{@html artist.bio}</section>
 </section>
 
 <style>
@@ -47,8 +46,7 @@
     overflow: visible;
 
     background: white;
-    width: 450px;
-    height: 400px;
+    max-height: 350px;
     border: 5px solid var(--artist-color);
     border-radius: 1rem;
     padding: 1rem;
@@ -79,23 +77,21 @@
   }
 
   h1 {
-    line-height: 1.5;
-    font-size: 1.4rem;
-    margin-left: 1rem;
+    font-size: 1.6rem;
+    margin: 0;
   }
 
   img {
-    min-width: 13rem;
-    min-height: 13rem;
-    width: 13rem;
-    height: 13rem;
-    margin: -4rem 1rem 1rem -4rem;
+    min-width: 10rem;
+    min-height: 10rem;
+    width: 10rem;
+    height: 10rem;
+    margin: -4rem 1rem 0rem -4rem;
     border-radius: 50%;
     border: 7.5px solid var(--artist-color);
 
     overflow: hidden;
     object-fit: cover;
-    z-index: -1;
   }
 
   .content {
