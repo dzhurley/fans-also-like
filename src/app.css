@@ -21,7 +21,8 @@ body {
   background: white;
 }
 
-#autoComplete_list_1 li:hover {
+#autoComplete_list_1 li:hover,
+#autoComplete_list_1 li[aria-selected="true"] {
   background: #f2f2f2;
   cursor: pointer;
 }

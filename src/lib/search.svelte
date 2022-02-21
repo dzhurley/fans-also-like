@@ -33,6 +33,13 @@
     inputRef.blur();
   };
 
+  const onKeyDown = evt => {
+    if (evt.key === 'Escape') {
+      value = '';
+      autoCompleteInstance.close();
+    }
+  };
+
   const clear = () => {
     value = '';
     autoCompleteInstance.close();
@@ -45,11 +52,12 @@
     id="autoComplete"
     bind:this={inputRef}
     bind:value
+    on:keydown={onKeyDown}
     on:selection
     on:selection={updateValue}
   />
 
-  {#if value}
+  {#if inputRef?.value}
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width="20"
