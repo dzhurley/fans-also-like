@@ -16,6 +16,18 @@
 <svelte:window on:keydown={onKeyDown} />
 
 <section class="modal" style="--artist-color: {artist.color}">
+  {#if imageUrl}
+    <img src={imageUrl} alt={`${artist.name} image`} />
+  {/if}
+
+  <h1>{artist.name}</h1>
+
+  {#if artist.bio}
+    <section class="content">{@html artist.bio}</section>
+  {/if}
+
+  <Player song={artist.song} color={artist.color} />
+
   <span class="close-button" on:click={onClose}>
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -32,17 +44,6 @@
       <line x1="6" y1="6" x2="18" y2="18" />
     </svg>
   </span>
-
-  <section class="header">
-    {#if imageUrl}
-      <img src={imageUrl} alt={`${artist.name} image`} />
-    {/if}
-
-    <h1>{artist.name}</h1>
-  </section>
-
-  <Player song={artist.song} color={artist.color} />
-  <section class="content">{@html artist.bio}</section>
 </section>
 
 <style>
@@ -50,11 +51,12 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, calc(-50% + 3rem));
     overflow: visible;
 
     background: white;
-    max-height: 350px;
+    width: 320px;
+    max-height: 440px;
     border: 5px solid var(--artist-color);
     border-radius: 1rem;
     padding: 1rem;
@@ -80,21 +82,21 @@
     border-radius: 50%;
   }
 
-  .header {
-    display: flex;
-  }
-
   h1 {
-    font-size: 1.6rem;
-    margin: 0;
+    margin: -3rem auto 1.25rem;
+    padding: 0.75rem;
+    text-align: center;
+    background-color: var(--artist-color);
+    color: white;
+    border-radius: 0.5rem;
   }
 
   img {
-    min-width: 10rem;
-    min-height: 10rem;
-    width: 10rem;
-    height: 10rem;
-    margin: -4rem 1rem 0rem -4rem;
+    min-width: 16rem;
+    min-height: 16rem;
+    width: 16rem;
+    height: 16rem;
+    margin: -8rem auto 0;
     border-radius: 50%;
     border: 7.5px solid var(--artist-color);
 
@@ -106,7 +108,9 @@
     border: 2.5px solid var(--artist-color);
     border-radius: 5px;
     overflow-y: scroll;
-    padding: 0.5rem 1rem;
-    line-height: 1.75;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    font-size: 12px;
+    line-height: 1.5;
   }
 </style>

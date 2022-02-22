@@ -1,4 +1,4 @@
-import { schemeTableau10 } from 'd3-scale-chromatic';
+import { schemeDark2 } from 'd3-scale-chromatic';
 
 export async function get({ url }) {
   const artist = url.searchParams.get('artist');
@@ -19,7 +19,7 @@ export async function get({ url }) {
         artists[artist.name] = {
           ...artist,
           group,
-          color: schemeTableau10[group % 10],
+          color: schemeDark2[group % 8],
           targets: [],
         };
       }

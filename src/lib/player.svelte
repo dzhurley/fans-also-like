@@ -50,6 +50,7 @@
   .song {
     display: flex;
     align-items: center;
+    font-size: 14px;
   }
 
   .controls {
@@ -57,7 +58,9 @@
     align-items: center;
     justify-content: center;
 
-    margin: 0.75rem 0.75rem 0.75rem 0rem;
+    margin-right: 0.75rem;
+    min-width: 2.5rem;
+    min-height: 2.5rem;
     width: 2.5rem;
     height: 2.5rem;
     cursor: pointer;

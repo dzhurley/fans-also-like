@@ -37,7 +37,6 @@
 
     border-radius: 0.5rem;
     border: 2.5px solid var(--artist-color);
-    box-shadow: 0 0 10px -5px black;
     background: white;
   }
 
@@ -46,8 +45,8 @@
     cursor: pointer;
   }
 
-  li:first-of-type {
-    border-bottom: 1px solid var(--artist-color);
+  li:nth-of-type(2n) {
+    border-top: 2.5px solid var(--artist-color);
   }
 
   li:hover {

@@ -1,6 +1,6 @@
 <script>
   import '../app.css';
-  import { schemeTableau10 } from 'd3-scale-chromatic';
+  import { schemeDark2 } from 'd3-scale-chromatic';
   import { onMount } from 'svelte';
 
   import Info from '$lib/info.svelte';
@@ -60,7 +60,7 @@
     searchedArtist = {
       ...detail.selection.value,
       group: 0,
-      color: schemeTableau10[0],
+      color: schemeDark2[0],
       targets: [],
     };
     artists = {
