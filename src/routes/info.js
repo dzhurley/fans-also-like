@@ -32,18 +32,18 @@ export async function get({ url }) {
     },
   ).then(r => r.json());
 
-  const track = tracksResp.tracks.find(
-    track => track.is_playable && !!track.preview_url,
-  );
+  const playable = tracksResp.tracks.find(track => track.preview_url);
 
   return {
     body: {
       bio,
-      song: {
-        link: track.external_urls.spotify,
-        src: track.preview_url,
-        name: track.name,
-      },
+      song: playable
+        ? {
+            link: playable.external_urls.spotify,
+            src: playable.preview_url,
+            name: playable.name,
+          }
+        : {},
     },
   };
 }

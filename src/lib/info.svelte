@@ -26,7 +26,9 @@
     <section class="content">{@html artist.bio}</section>
   {/if}
 
-  <Player song={artist.song} color={artist.color} />
+  {#if artist.song.src}
+    <Player song={artist.song} color={artist.color} />
+  {/if}
 
   <span class="close-button" on:click={onClose}>
     <svg
@@ -83,7 +85,7 @@
   }
 
   h1 {
-    margin: -3rem auto 1.25rem;
+    margin: -3rem auto 0;
     padding: 0.75rem;
     text-align: center;
     background-color: var(--artist-color);
@@ -108,9 +110,9 @@
     border: 2.5px solid var(--artist-color);
     border-radius: 5px;
     overflow-y: scroll;
-    margin-bottom: 1rem;
     padding: 0.5rem;
     font-size: 12px;
     line-height: 1.5;
+    margin-top: 1.25rem;
   }
 </style>

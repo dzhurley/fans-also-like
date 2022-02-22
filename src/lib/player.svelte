@@ -51,6 +51,7 @@
     display: flex;
     align-items: center;
     font-size: 14px;
+    margin-top: 1rem;
   }
 
   .controls {
