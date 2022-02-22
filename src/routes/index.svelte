@@ -70,7 +70,11 @@
   };
 
   const showInfo = async artist => {
-    fetch(`/info?artist=${artist.id}&name=${artist.name}&token=${token}`)
+    fetch(
+      `/info?artist=${artist.id}&name=${encodeURIComponent(
+        artist.name,
+      )}&token=${token}`,
+    )
       .then(resp => resp.json())
       .then(({ bio, song }) => {
         infoArtist = {
@@ -90,7 +94,9 @@
   {#if pristine}
     <section class="title">
       <h1>fans also like...</h1>
-      <p>discover music you might also like using music you know you already do</p>
+      <p>
+        discover music you might also like using music you know you already do
+      </p>
     </section>
   {/if}
 
@@ -109,10 +115,10 @@
   #svelte {
     display: flex;
     flex-direction: column;
+    height: 100vh;
   }
 
   #svelte.pristine {
-    height: 100vh;
     justify-content: center;
     align-items: center;
   }

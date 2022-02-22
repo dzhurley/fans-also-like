@@ -16,7 +16,7 @@ export async function get({ url }) {
     `\\s*?<a href="https://www.last.fm/music/.*">Read more on Last.fm</a>. User-contributed text is available under the Creative Commons By-SA License; additional terms may apply.`,
   );
 
-  const bio = bioResp.artist.bio.content
+  const bio = (bioResp.artist?.bio?.content ?? '')
     .replace(lastWords, '')
     .trim()
     .replace(/\n/g, '<br />');
