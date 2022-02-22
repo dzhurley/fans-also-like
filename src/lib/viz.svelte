@@ -6,6 +6,8 @@
 
   import { fade } from 'svelte/transition';
 
+  import Menu from '$lib/menu.svelte';
+
   export let artists = {};
   export let infoArtist;
   export let onRelateClick;
@@ -81,9 +83,17 @@
   }
 
   let hovering = null;
+  let clicking = null;
   let hoveredPairs = [];
-  let links = [];
   let hoveredLinks = [];
+  let links = [];
+
+  const resetNodeLinkState = () => {
+    hovering = null;
+    clicking = null;
+    hoveredPairs = [];
+    hoveredLinks = [];
+  };
 
   $: {
     const newHoveredLinks = [];
@@ -106,17 +116,33 @@
 
   $: {
     if (!infoArtist) {
-      hovering = null;
-      hoveredPairs = [];
-      hoveredLinks = [];
+      resetNodeLinkState();
     }
   }
+
+  $: disabled = !!infoArtist || !!clicking;
+
+  const onNodeClick = artist => {
+    if (!disabled) {
+      clicking = artist;
+    } else if (!infoArtist) {
+      resetNodeLinkState();
+    }
+  };
+
+  const onNonNodeClick = evt => {
+    if (
+      clicking &&
+      !infoArtist &&
+      !['UL', 'LI'].includes(evt.target.nodeName)
+    ) {
+      resetNodeLinkState();
+    }
+  };
 </script>
 
-<svelte:window bind:innerWidth={width} bind:innerHeight={height} />
-
 {#if root.height > 0}
-  <svg {viewBox} class:hovering class:infoArtist>
+  <svg {viewBox} class:hovering class:disabled>
     <g class="links">
       {#each links as [incoming, outgoing]}
         <path d={line(incoming.path(outgoing))} />
@@ -136,13 +162,11 @@
           transform={`rotate(${(d.x * 180) / Math.PI - 90}) translate(${
             d.y
           },0)`}
-          on:click={evt => {
-            if (!infoArtist && evt.target.nodeName !== 'circle') {
-              onRelateClick(artists[d.data.id]);
-            }
+          on:click|stopPropagation={() => {
+            onNodeClick(artists[d.data.id]);
           }}
           on:mouseenter={() => {
-            if (!infoArtist) {
+            if (!disabled) {
               hovering = d.data.id;
               const addLink = ([src, dest]) => {
                 hoveredPairs = [...hoveredPairs, [src.data.id, dest.data.id]];
@@ -152,7 +176,7 @@
             }
           }}
           on:mouseleave={() => {
-            if (!infoArtist) {
+            if (!disabled) {
               hovering = null;
               hoveredPairs = [];
               hoveredLinks = [];
@@ -167,36 +191,37 @@
             width={(nodeSizes[d.data.id]?.width ?? 0) + 20}
             height={(nodeSizes[d.data.id]?.height ?? 0) + 8}
           />
-          <circle
-            stroke={hovering === d.data.id ? d.data.color : 'none'}
-            stroke-width="12"
-            fill={infoArtist?.name === d.data.id
-              ? '#839496'
-              : hovering === d.data.id
-              ? 'white'
-              : 'none'}
-            on:click={evt => {
-              if ((evt.target, evt.currentTarget.nodeName === 'circle')) {
-                onInfoClick(artists[d.data.id]);
-              }
-            }}
-            r="16"
-            cx="-16"
-          />
-
           <text
             class:hovering={d.data.id === hovering}
             x={d.x < Math.PI ? 6 : -6}
             y={4}
             fill={d.data.color}
             text-anchor={d.x < Math.PI ? 'start' : 'end'}
-            transform={d.x >= Math.PI ? 'rotate(180)' : null}>{d.data.id}</text
-          ></g
-        >
+            transform={d.x >= Math.PI ? 'rotate(180)' : null}
+          >
+            {d.data.id}
+          </text>
+        </g>
       {/each}
     </g>
   </svg>
+
+  <Menu
+    artist={clicking}
+    onRelateClick={() => {
+      onRelateClick(clicking);
+      resetNodeLinkState();
+    }}
+    onInfoClick={() => {
+      onInfoClick(clicking);
+      clicking = null;
+    }}
+  />
 {/if}
+
+<svelte:window bind:innerWidth={width} bind:innerHeight={height} />
+
+<svelte:body on:click={onNonNodeClick} />
 
 <style>
   svg {
@@ -206,19 +231,13 @@
   }
 
   rect,
-  circle,
   text {
     cursor: pointer;
   }
 
-  .infoArtist rect,
-  .infoArtist circle,
-  .infoArtist text {
+  .disabled rect,
+  .disabled text {
     cursor: default;
-  }
-
-  circle:hover {
-    fill: #839496;
   }
 
   text {

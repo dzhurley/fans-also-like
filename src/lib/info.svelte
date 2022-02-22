@@ -5,7 +5,15 @@
   export let onClose;
 
   const imageUrl = artist.images?.[0]?.url;
+
+  const onKeyDown = evt => {
+    if (evt.key === 'Escape') {
+      onClose();
+    }
+  };
 </script>
+
+<svelte:window on:keydown={onKeyDown} />
 
 <section class="modal" style="--artist-color: {artist.color}">
   <span class="close-button" on:click={onClose}>
