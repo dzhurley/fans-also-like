@@ -17,7 +17,7 @@
 
 <section class="modal" style="--artist-color: {artist.color}">
   {#if imageUrl}
-    <img src={imageUrl} alt={`${artist.name} image`} />
+    <img class="artist-image" src={imageUrl} alt={`${artist.name} image`} />
   {/if}
 
   <h1>{artist.name}</h1>
@@ -29,6 +29,20 @@
   {#if artist.song.src}
     <Player song={artist.song} color={artist.color} />
   {/if}
+
+  <section class="links">
+    {#if artist.external_urls.spotify}
+      <a href={artist.external_urls.spotify}>
+        <img src="/spotify.png" alt="spotify profile link" />
+      </a>
+    {/if}
+
+    {#if artist.external_urls.lastfm}
+      <a href={artist.external_urls.lastfm}>
+        <img src="/lastfm.png" alt="last.fm profile link" />
+      </a>
+    {/if}
+  </section>
 
   <span class="close-button" on:click={onClose}>
     <svg
@@ -93,7 +107,7 @@
     border-radius: 0.5rem;
   }
 
-  img {
+  .artist-image {
     min-width: 16rem;
     min-height: 16rem;
     width: 16rem;
@@ -114,5 +128,25 @@
     font-size: 12px;
     line-height: 1.5;
     margin-top: 1.25rem;
+  }
+
+  .links {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin: 1rem 0 -3rem;
+  }
+
+  .links a {
+    border: 5px solid var(--artist-color);
+    border-radius: 50%;
+    width: 3.5rem;
+    height: 3.5rem;
+    overflow: hidden;
+    display: flex;
+  }
+
+  .links img {
+    margin: -1px;
   }
 </style>

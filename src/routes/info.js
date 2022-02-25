@@ -37,6 +37,7 @@ export async function get({ url }) {
   return {
     body: {
       bio,
+      lastfmURL: bioResp.artist?.url ?? '',
       song: playable
         ? {
             link: playable.external_urls.spotify,

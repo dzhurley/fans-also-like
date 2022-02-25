@@ -76,11 +76,15 @@
       )}&token=${token}`,
     )
       .then(resp => resp.json())
-      .then(({ bio, song }) => {
+      .then(({ bio, lastfmURL, song }) => {
         infoArtist = {
           ...artist,
           bio,
           song,
+          external_urls: {
+            ...artist.external_urls,
+            lastfm: lastfmURL,
+          },
         };
       });
   };
