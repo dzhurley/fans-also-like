@@ -113,9 +113,7 @@
   {#if pristine}
     <section class="title">
       <h1>fans also like...</h1>
-      <p>
-        discover music you might also like using music you know you already do
-      </p>
+      <p>discover new music similar to artists you already know and like</p>
     </section>
   {/if}
 
