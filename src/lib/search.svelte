@@ -87,6 +87,7 @@
     margin: auto;
     padding: 0.5rem;
     width: 100%;
+    border: 1px solid black;
   }
 
   svg {
