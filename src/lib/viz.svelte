@@ -1,15 +1,13 @@
 <script>
   /* much taken from https://observablehq.com/@d3/bilevel-edge-bundling */
-  import { ascending } from 'd3-array';
   import { cluster, hierarchy } from 'd3-hierarchy';
   import { curveBundle, lineRadial } from 'd3-shape';
-
-  import { fade } from 'svelte/transition';
 
   import Menu from '$lib/menu.svelte';
 
   export let artists = {};
   export let infoArtist;
+  export let noRelatedFound;
   export let onRelateClick;
   export let onInfoClick;
 
@@ -141,7 +139,7 @@
   };
 </script>
 
-{#if root.height > 0}
+{#if root.height > 0 && !noRelatedFound}
   <svg {viewBox} class:hovering class:disabled>
     <g class="links">
       {#each links as [incoming, outgoing]}

@@ -3,12 +3,13 @@
   import { fly } from 'svelte/transition';
 
   export let artist;
+  export let noRelatedFound;
   export let onClose;
 
   const imageUrl = artist.images?.[0]?.url;
 
   const onKeyDown = evt => {
-    if (evt.key === 'Escape') {
+    if (!noRelatedFound && evt.key === 'Escape') {
       onClose();
     }
   };
@@ -26,6 +27,10 @@
   {/if}
 
   <h1>{artist.name}</h1>
+
+  {#if noRelatedFound}
+    <p class="no-related">No related artists found, try another search</p>
+  {/if}
 
   {#if artist.bio}
     <section class="content">{@html artist.bio}</section>
@@ -49,22 +54,24 @@
     {/if}
   </section>
 
-  <span class="close-button" on:click={onClose}>
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="white"
-      stroke-width="2.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    >
-      <line x1="18" y1="6" x2="6" y2="18" />
-      <line x1="6" y1="6" x2="18" y2="18" />
-    </svg>
-  </span>
+  {#if !noRelatedFound}
+    <span class="close-button" on:click={onClose}>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="white"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <line x1="18" y1="6" x2="6" y2="18" />
+        <line x1="6" y1="6" x2="18" y2="18" />
+      </svg>
+    </span>
+  {/if}
 </section>
 
 <style>
@@ -153,5 +160,11 @@
 
   .links img {
     margin: -1px;
+  }
+
+  .no-related {
+    color: red;
+    font-size: 12px;
+    margin-bottom: 0;
   }
 </style>

@@ -11,6 +11,7 @@ body {
   margin: 0;
   width: 20rem;
   font-size: 12px;
+  z-index: 1;
 }
 
 #autoComplete_list_1 li {

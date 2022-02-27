@@ -16,11 +16,37 @@
   let searchedArtist;
   let infoArtist;
 
+  let noRelatedFound = true;
+
   onMount(async () => {
     token = await fetch('/auth')
       .then(r => r.json())
       .then(r => r.access_token);
   });
+
+  const showInfo = async artist => {
+    fetch(
+      `/info?artist=${artist.id}&name=${encodeURIComponent(
+        artist.name,
+      )}&token=${token}`,
+    )
+      .then(resp => resp.json())
+      .then(({ bio, lastfmURL, song }) => {
+        infoArtist = {
+          ...artist,
+          bio,
+          song,
+          external_urls: {
+            ...artist.external_urls,
+            lastfm: lastfmURL,
+          },
+        };
+      });
+  };
+
+  const onInfoClose = () => {
+    infoArtist = null;
+  };
 
   const relate = async artist => {
     const url = `/relate?artist=${artist.id}&group=${group}&token=${token}`;
@@ -51,6 +77,14 @@
           ...remainingRelated,
         };
         group++;
+
+        // force info for artist with no related artists found
+        if (Object.keys(artists).length === 1 && !Object.keys(related).length) {
+          showInfo(Object.values(artists)[0]);
+          noRelatedFound = true;
+        } else {
+          noRelatedFound = false;
+        }
       });
   };
 
@@ -58,6 +92,10 @@
     if (pristine) {
       pristine = false;
     }
+
+    noRelatedFound = true;
+    onInfoClose();
+
     searchedArtist = {
       ...detail.selection.value,
       group: 0,
@@ -68,30 +106,6 @@
       [searchedArtist.name]: searchedArtist,
     };
     relate(searchedArtist);
-  };
-
-  const showInfo = async artist => {
-    fetch(
-      `/info?artist=${artist.id}&name=${encodeURIComponent(
-        artist.name,
-      )}&token=${token}`,
-    )
-      .then(resp => resp.json())
-      .then(({ bio, lastfmURL, song }) => {
-        infoArtist = {
-          ...artist,
-          bio,
-          song,
-          external_urls: {
-            ...artist.external_urls,
-            lastfm: lastfmURL,
-          },
-        };
-      });
-  };
-
-  const onInfoClose = () => {
-    infoArtist = null;
   };
 </script>
 
@@ -108,10 +122,16 @@
   <Search {token} on:selection={onSelection} />
 
   {#if !pristine}
-    <Viz {artists} {infoArtist} onInfoClick={showInfo} onRelateClick={relate} />
+    <Viz
+      {artists}
+      {infoArtist}
+      {noRelatedFound}
+      onInfoClick={showInfo}
+      onRelateClick={relate}
+    />
 
     {#if infoArtist}
-      <Info artist={infoArtist} onClose={onInfoClose} />
+      <Info artist={infoArtist} {noRelatedFound} onClose={onInfoClose} />
     {/if}
   {/if}
 
