@@ -3,6 +3,7 @@
   import { schemeDark2 } from 'd3-scale-chromatic';
   import { onMount } from 'svelte';
 
+  import About from '$lib/about.svelte';
   import Info from '$lib/info.svelte';
   import Search from '$lib/search.svelte';
   import Viz from '$lib/viz.svelte';
@@ -113,6 +114,8 @@
       <Info artist={infoArtist} onClose={onInfoClose} />
     {/if}
   {/if}
+
+  <About />
 </div>
 
 <style>
