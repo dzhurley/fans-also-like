@@ -8,9 +8,19 @@
   <section class="modal" transition:fade={{ duration: 200 }}>
     <p>
       Search, relationships, photos, and song samples provided by
-      <a href="https://www.spotify.com">Spotify</a>. Artist bios supplied by
-      <a href="https://www.last.fm">last.fm</a>. Made with ❤️ and 🍵 on
-      <a href="https://github.com/dzhurley/fans-also-like">Github</a>.
+      <a
+        href="https://www.spotify.com"
+        target="_blank"
+        rel="noopener noreferrer">Spotify</a
+      >. Artist bios supplied by
+      <a href="https://www.last.fm" target="_blank" rel="noopener noreferrer"
+        >last.fm</a
+      >. Made with ❤️ and 🍵 on
+      <a
+        href="https://github.com/dzhurley/fans-also-like"
+        target="_blank"
+        rel="noopener noreferrer">Github</a
+      >.
     </p>
   </section>
 {/if}

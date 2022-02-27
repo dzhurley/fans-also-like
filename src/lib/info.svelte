@@ -42,13 +42,21 @@
 
   <section class="links">
     {#if artist.external_urls.spotify}
-      <a href={artist.external_urls.spotify}>
+      <a
+        href={artist.external_urls.spotify}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         <img src="/spotify.png" alt="spotify profile link" />
       </a>
     {/if}
 
     {#if artist.external_urls.lastfm}
-      <a href={artist.external_urls.lastfm}>
+      <a
+        href={artist.external_urls.lastfm}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         <img src="/lastfm.png" alt="last.fm profile link" />
       </a>
     {/if}
