@@ -1,5 +1,6 @@
 <script>
   import Player from './player.svelte';
+  import { fly } from 'svelte/transition';
 
   export let artist;
   export let onClose;
@@ -15,7 +16,11 @@
 
 <svelte:window on:keydown={onKeyDown} />
 
-<section class="modal" style="--artist-color: {artist.color}">
+<section
+  class="modal"
+  transition:fly={{ y: 15 }}
+  style="--artist-color: {artist.color}"
+>
   {#if imageUrl}
     <img class="artist-image" src={imageUrl} alt={`${artist.name} image`} />
   {/if}

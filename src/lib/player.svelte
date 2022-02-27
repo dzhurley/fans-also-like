@@ -1,4 +1,6 @@
 <script>
+  import { fade } from 'svelte/transition';
+
   export let song;
   export let color;
 
@@ -37,6 +39,7 @@
       {:else}
         <path
           class="progress"
+          transition:fade
           d={`M20 ${(40 - 31.831) / 2}
             a 15.9155 15.9155 0 0 1 0 31.831
             a 15.9155 15.9155 0 0 1 0 -31.831`}
@@ -46,8 +49,10 @@
           stroke-linecap="butt"
           stroke-dasharray={`${(currentTime / duration) * 100}, 100`}
         />
-        <rect x="13.5" y="12" width="3.5" height="16" />
-        <rect x="22.5" y="12" width="3.5" height="16" />
+        <g transition:fade={{ delay: 0, duration: 0 }}>
+          <rect x="13.5" y="12" width="3.5" height="16" />
+          <rect x="22.5" y="12" width="3.5" height="16" />
+        </g>
       {/if}
     </svg>
   </span>
