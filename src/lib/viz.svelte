@@ -9,6 +9,7 @@
   export let infoArtist;
   export let noRelatedFound;
   export let onRelateClick;
+  export let onInfoClose;
   export let onInfoClick;
 
   let data;
@@ -112,16 +113,9 @@
     hoveredLinks = newHoveredLinks;
   }
 
-  $: {
-    if (!infoArtist) {
-      resetNodeLinkState();
-    }
-  }
-
-  $: disabled = !!infoArtist || !!clicking;
-
   const onNodeClick = artist => {
-    if (!disabled) {
+    if (!clicking) {
+      onInfoClose();
       clicking = artist;
     } else if (!infoArtist) {
       resetNodeLinkState();
@@ -129,18 +123,14 @@
   };
 
   const onNonNodeClick = evt => {
-    if (
-      clicking &&
-      !infoArtist &&
-      !['UL', 'LI'].includes(evt.target.nodeName)
-    ) {
+    if (clicking && !['UL', 'LI'].includes(evt.target.nodeName)) {
       resetNodeLinkState();
     }
   };
 </script>
 
 {#if root.height > 0 && !noRelatedFound}
-  <svg {viewBox} class:hovering class:disabled>
+  <svg {viewBox} class:hovering class:clicking>
     <g class="links">
       {#each links as [incoming, outgoing]}
         <path d={line(incoming.path(outgoing))} />
@@ -164,7 +154,7 @@
             onNodeClick(artists[d.data.id]);
           }}
           on:mouseenter={() => {
-            if (!disabled) {
+            if (!clicking) {
               hovering = d.data.id;
               const addLink = ([src, dest]) => {
                 hoveredPairs = [...hoveredPairs, [src.data.id, dest.data.id]];
@@ -174,7 +164,7 @@
             }
           }}
           on:mouseleave={() => {
-            if (!disabled) {
+            if (!clicking) {
               hovering = null;
               hoveredPairs = [];
               hoveredLinks = [];
@@ -233,8 +223,8 @@
     cursor: pointer;
   }
 
-  .disabled rect,
-  .disabled text {
+  .clicking rect,
+  .clicking text {
     cursor: default;
   }
 

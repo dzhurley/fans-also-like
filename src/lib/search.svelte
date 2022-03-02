@@ -88,6 +88,7 @@
     padding: 0.5rem;
     width: 100%;
     border: 1px solid black;
+    border-radius: 3px;
   }
 
   svg {

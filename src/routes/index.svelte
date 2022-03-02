@@ -124,6 +124,7 @@
       {artists}
       {infoArtist}
       {noRelatedFound}
+      {onInfoClose}
       onInfoClick={showInfo}
       onRelateClick={relate}
     />
