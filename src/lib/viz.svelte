@@ -156,6 +156,8 @@
           on:mouseenter={() => {
             if (!clicking) {
               hovering = d.data.id;
+              hoveredPairs = [];
+              hoveredLinks = [];
               const addLink = ([src, dest]) => {
                 hoveredPairs = [...hoveredPairs, [src.data.id, dest.data.id]];
               };
